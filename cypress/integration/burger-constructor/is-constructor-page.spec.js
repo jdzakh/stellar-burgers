@@ -1,6 +1,6 @@
 describe('создание заказа', () => {
    before(() => {
-      cy.visit('http://localhost:3000');
+      cy.visit('http://localhost:4000');
    });
 
    it('должен открыть страницу конструктора по умолчанию', () => {
