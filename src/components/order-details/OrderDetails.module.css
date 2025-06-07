@@ -1,0 +1,17 @@
+.modal {
+   display: flex;
+   flex-direction: column;
+   justify-content: center;
+   align-items: center;
+}
+
+.img {
+   display: flex;
+   justify-content: center;
+   width: 120px;
+   height: 120px;
+}
+
+.text {
+   color: #8585ad;
+}

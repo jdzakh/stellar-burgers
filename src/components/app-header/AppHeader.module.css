@@ -1,0 +1,54 @@
+.header {
+   z-index: 100;
+   width: 100vw;
+   background: #1c1c21;
+   box-shadow: 
+    0px 24px 32px rgba(0, 0, 0, 0.04),
+    0px 16px 24px rgba(0, 0, 0, 0.04),
+    0px 4px 8px rgba(0, 0, 0, 0.04),
+    0px 0px 1px rgba(0, 0, 0, 0.04);
+}
+
+.content {
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   padding: 0 20px;
+}
+
+.logo {
+   margin-right: 160px;
+}
+
+.navigation {
+   display: flex;
+   font-size: 16px;
+   line-height: 24px;
+   cursor: pointer;
+}
+
+.link_active {
+   display: flex;
+   flex-direction: row;
+   align-items: center;
+   text-decoration: none;
+   color: #f2f2f3;
+}
+
+.link_active svg {
+   fill: white;
+}
+
+.link {
+   display: flex;
+   text-decoration: none;
+   align-items: center;
+   color: #8585ad;
+   padding: 5px 10px; /* Немного внутреннего отступа для лучшей кликабельности */
+   transition: color 0.2s ease;
+}
+
+.link:hover {
+  color: #f2f2f3;
+}
+

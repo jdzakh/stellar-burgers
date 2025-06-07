@@ -1,23 +1,23 @@
+import { rootReducer } from './reducers/rootReducer';
+import {  ActionCreator, Action } from 'redux';
 import { configureStore } from '@reduxjs/toolkit';
+import { ThunkAction} from 'redux-thunk';
+import { socketMiddleware } from '../middleware/socket-middleware';
+import { WS_ORDER_ACTIONS } from './reducers/ws-orders';
 
-import {
-  TypedUseSelectorHook,
-  useDispatch as dispatchHook,
-  useSelector as selectorHook
-} from 'react-redux';
+const reducer = rootReducer
 
-const rootReducer = () => {}; // Заменить на импорт настоящего редьюсера
+export const store = configureStore({
+  reducer,
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware().concat(
+      socketMiddleware(
+        "wss://norma.nomoreparties.space/orders/all",
+        WS_ORDER_ACTIONS
+      )
+    ),
+})
 
-const store = configureStore({
-  reducer: rootReducer,
-  devTools: process.env.NODE_ENV !== 'production'
-});
-
-export type RootState = ReturnType<typeof rootReducer>;
-
+export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
-
-export const useDispatch: () => AppDispatch = () => dispatchHook();
-export const useSelector: TypedUseSelectorHook<RootState> = selectorHook;
-
-export default store;
+export type AppThunk<TReturn = void> = ActionCreator<ThunkAction<TReturn, Action, RootState, any>>;

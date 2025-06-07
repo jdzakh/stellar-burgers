@@ -1,0 +1,24 @@
+.tab {
+   display: grid;
+   grid-template-columns: 1fr 1fr 1fr;
+}
+
+.ingredients {
+   max-height: 730px;
+   overflow-y: auto;
+   direction: ltr;
+   scrollbar-width: thin;
+}
+.ingredients::-webkit-scrollbar {
+   width: 8px;
+}
+
+.ingredients::-webkit-scrollbar-track {
+   background: #2f2f37;
+   border-radius: 664px;
+}
+
+.ingredients::-webkit-scrollbar-thumb {
+   background-color: rgba(133, 133, 173, 1);
+}
+
