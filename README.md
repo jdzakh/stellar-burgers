@@ -13,7 +13,7 @@
 Шаблон приложения был взят из [Figma](https://www.figma.com/design/vIywAvqfkOIRWGOkfOnReY/React-Fullstack_-%D0%9F%D1%80%D0%BE%D0%B5%D0%BA%D1%82%D0%BD%D1%8B%D0%B5-%D0%B7%D0%B0%D0%B4%D0%B0%D1%87%D0%B8--3-%D0%BC%D0%B5%D1%81%D1%8F%D1%86%D0%B0-_external_link?node-id=2-1&p=f&t=DCnRlMqUpbcPBM6z-0)
 
 ## Технологии ##
-- Использована библиотека UI-компонентов [Яндекс.Практикум.Реакт](https://github.com/yandex-praktikum/react-developer-burger-ui-components)
+- Использована библиотека UI-компонентов 
 - Фронтэнд-часть приложения написана с использованием библиотеки [React](https://reactjs.org/)
 - Шаблон приложения развернут с помощью create-react-app
 - Реализовано тестирование бизнес-логики (редьюсеров стора) при помощи unit-тестов средствами встроенной в CRA библиотеки Jest, а также e2e тестирование UX нескольких компонентов при помощи Сypress 
@@ -24,4 +24,4 @@
 1) склонируйте репозиторий
 2) установите зависимости командой `npm i`
 3) запустите проект командой `npm start`
-4) перейдите по адресу http://localhost:3000
+4) перейдите по адресу http://localhost:4000
