@@ -14,7 +14,7 @@ import reducer, {
 
 const MOCK_INGREDIENTS = [
    {
-      _id: "60d3b41abdacab0026a733c7",
+      _id: "643d69a5c3f7b9001cfa093d",
       name: "Флюоресцентная булка R2-D3",
       type: "bun",
       proteins: 44,
@@ -28,7 +28,7 @@ const MOCK_INGREDIENTS = [
       __v: 0,
    },
    {
-      _id: "60d3b41abdacab0026a733c8",
+      _id: "643d69a5c3f7b9001cfa094d",
       name: "Филе Люминесцентного тетраодонтимформа",
       type: "main",
       proteins: 44,
@@ -42,7 +42,7 @@ const MOCK_INGREDIENTS = [
       __v: 0,
    },
    {
-      _id: "60d3b41abdacab0026a733c9",
+      _id: "643d69a5c3f7b9001cfa093f",
       name: "Мясо бессмертных моллюсков Protostomia",
       type: "main",
       proteins: 433,
@@ -56,7 +56,7 @@ const MOCK_INGREDIENTS = [
       __v: 0,
    },
    {
-      _id: "60d3b41abdacab0026a733ca",
+      _id: "643d69a5c3f7b9001cfa0940",
       name: "Говяжий метеорит (отбивная)",
       type: "main",
       proteins: 800,

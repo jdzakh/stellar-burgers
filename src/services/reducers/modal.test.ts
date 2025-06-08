@@ -8,7 +8,7 @@ import reducer, {
 
 const MOCK_INGREDIENT = [
    {
-      _id: "60d3b41abdacab0026a733c7",
+      _id: "643d69a5c3f7b9001cfa093d",
       name: "Флюоресцентная булка R2-D3",
       type: "bun",
       proteins: 44,
