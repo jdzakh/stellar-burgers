@@ -1,6 +1,7 @@
 .tab {
    display: grid;
    grid-template-columns: 1fr 1fr 1fr;
+   gap: 10px; 
 }
 
 .ingredients {
@@ -8,6 +9,8 @@
    overflow-y: auto;
    direction: ltr;
    scrollbar-width: thin;
+   scroll-behavior: smooth;
+   padding: 10px;
 }
 .ingredients::-webkit-scrollbar {
    width: 8px;

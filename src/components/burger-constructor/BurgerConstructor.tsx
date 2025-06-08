@@ -4,10 +4,10 @@ import { ConstructorElement, CurrencyIcon, Button } from '@ya.praktikum/react-de
 import Modal from '../modal/Modal';
 import OrderDetails from '../order-details/OrderDetails';
 import AddedIngredient from '../added-ingredient/AddedIngredient';
-import { DndProvider } from "react-dnd";
-import { HTML5Backend } from "react-dnd-html5-backend";
-import { useDrop } from "react-dnd";
-import { useNavigate } from "react-router-dom";
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
+import { useDrop } from 'react-dnd';
+import { useNavigate } from 'react-router-dom';
 import { sendOrder } from '../../services/actions/sendOrder';
 import { closeCreatedOrder } from '../../services/reducers/modal';
 import { sortConstructorIngredients } from '../../services/reducers/ingredient';
@@ -16,127 +16,162 @@ import { useAppDispatch, useAppSelector } from '../../hook/hook';
 import Loader from '../loader/Loader';
 
 const BurgerConstructor: FC<IBurgerConstructorProps> = ({ onDropHandler }) => {
-   const { userInfo } = useAppSelector(state => state.userSlice)
-   const { constructorIngredients, createdOrder, orderRequest, orderFailed } = useAppSelector(state => state.ingredientSlice)
-   const { modalCreatedOrderActive } = useAppSelector(state => state.modalSlice)
-   const { token } = useAppSelector(state => state.userSlice)
-   const dispatch = useAppDispatch()
-   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
-   const sum = useMemo(() =>
-      constructorIngredients.reduce((acc, cur) => cur.type === 'bun' ? acc + (cur.price * 2) : acc + cur.price, 0)
-      , [constructorIngredients])
+  const { userInfo, token } = useAppSelector((state) => state.userSlice);
+  const {
+    constructorIngredients,
+    createdOrder,
+    orderRequest,
+    orderFailed,
+  } = useAppSelector((state) => state.ingredientSlice);
+  const { modalCreatedOrderActive } = useAppSelector((state) => state.modalSlice);
 
-   const [{ isHover }, dropRef] = useDrop({
-      accept: 'ingredient',
-      drop(item: IIngredient) {
-         onDropHandler(item);
-      },
-      collect: (monitor) => ({
-         isHover: monitor.canDrop(),
-      }),
-   });
+  // Расчет суммы
+  const sum = useMemo(
+    () =>
+      constructorIngredients.reduce(
+        (acc, item) =>
+          item.type === 'bun' ? acc + item.price * 2 : acc + item.price,
+        0
+      ),
+    [constructorIngredients]
+  );
 
-   const colorBorder = isHover ? style.constructor_container_one : style.constructor_container_two;
+  // Область для дропа ингредиентов
+  const [{ isHover }, dropRef] = useDrop({
+    accept: 'ingredient',
+    drop: (item: IIngredient) => {
+      onDropHandler(item);
+    },
+    collect: (monitor) => ({
+      isHover: monitor.canDrop(),
+    }),
+  });
 
-   const bun = constructorIngredients.find((item) => item.type === 'bun');
+  const borderClass = isHover ? style.constructor_container_one : style.constructor_container_two;
 
-   const bunHandler = (constructorIngredients: IIngredient[], property: string, trueValue: string, falseValue: string) => constructorIngredients.find(ingredient => ingredient.type === 'bun')
-      // @ts-ignore
-      ? `${(constructorIngredients.find(ingredient => ingredient.type === 'bun'))[property]} ${trueValue}`
-      : falseValue
-   
-   const openOrderDetails = () => {
-      const ingredientsId = constructorIngredients.map((ingredient) => ingredient._id)
-      if (userInfo) {
-         dispatch(sendOrder(ingredientsId, token))
-      } else {
-         navigate('/login')
-      }
-   }
+  // Находим булку
+  const bun = constructorIngredients.find((item) => item.type === 'bun');
 
-   const onClose = () => {
-      dispatch(closeCreatedOrder());
-   }
+  // Функция для получения свойств булки
+  const bunHandler = (
+    ingredients: IIngredient[],
+    property: keyof IIngredient,
+    trueValue: string,
+    falseValue: string
+  ) =>
+    ingredients.find((ingredient) => ingredient.type === 'bun')?.[property] ?? falseValue;
 
-   const moveCard = (dragIndex: number, hoverIndex: number) => {
-      const dragCard = constructorIngredients[dragIndex];
-      const newConstructorIngredients = [...constructorIngredients];
-      newConstructorIngredients.splice(dragIndex, 1);
-      newConstructorIngredients.splice(hoverIndex, 0, dragCard);
-      dispatch(sortConstructorIngredients(newConstructorIngredients));
-   }
+  // Открытие модального окна заказа
+  const openOrderDetails = () => {
+    const ingredientsId = constructorIngredients.map((ingredient) => ingredient._id);
+    if (userInfo) {
+      dispatch(sendOrder(ingredientsId, token));
+    } else {
+      navigate('/login');
+    }
+  };
 
-   return (
-      <DndProvider backend={HTML5Backend}>
-         <div className={`${colorBorder} mt-25`} ref={dropRef}>
-            {(constructorIngredients.length > 0 && bun)
-               ? <div className='ml-20'>
-                  <ConstructorElement
-                     type="top"
-                     isLocked={true}
-                     text={bunHandler(constructorIngredients, 'name', '(верх)', 'Выберите булку')}
-                     price={+bunHandler(constructorIngredients, 'price', '', '0')}
-                     thumbnail={bunHandler(constructorIngredients, 'image', '', '')}
-                  />
-               </div>
-               : <div className={`${style.bunTop} ml-20 mt-4 mb-4`}>
-                  <p className="text text_type_main-large">
-                     Добавте булку
-                  </p>
-               </div>
-            }
+  // Закрытие модального окна
+  const onClose = () => {
+    dispatch(closeCreatedOrder());
+  };
 
-            <ul className={`${style.elements}`}>
-               {constructorIngredients.map((item, index) =>
-                  item.type !== 'bun' && <AddedIngredient key={item.uuid} moveCard={moveCard} index={index} ingredient={item} id={`${item._id}${index}`} />
-               )}
-            </ul>
+  // Перемещение ингредиентов
+  const moveCard = (dragIndex: number, hoverIndex: number) => {
+    const dragItem = constructorIngredients[dragIndex];
+    const newIngredients = [...constructorIngredients];
+    newIngredients.splice(dragIndex, 1);
+    newIngredients.splice(hoverIndex, 0, dragItem);
+    dispatch(sortConstructorIngredients(newIngredients));
+  };
 
-            {(constructorIngredients.length > 0 && bun)
-               ? <div className='ml-20'>
-                  <ConstructorElement
-                     type="bottom"
-                     isLocked={true}
-                     text={bunHandler(constructorIngredients, 'name', '(низ)', 'Выберите булку')}
-                     price={+bunHandler(constructorIngredients, 'price', '', '0')}
-                     thumbnail={bunHandler(constructorIngredients, 'image', '', '')}
-                  />
-               </div>
-               : <div className={`${style.bunBot} ml-20 mt-4 mb-4`}>
-                  <p className="text text_type_main-large">
-                     Добавте булку
-                  </p>
-               </div>
-            }
+  return (
+    <DndProvider backend={HTML5Backend}>
+      <div className={`${borderClass} mt-25`} ref={dropRef}>
+        {/* Верхняя булка */}
+        {constructorIngredients.length > 0 && bun ? (
+          <div className="ml-20">
+            <ConstructorElement
+              type="top"
+              isLocked={true}
+              text={bunHandler(constructorIngredients, 'name', '(верх)', 'Выберите булку')}
+              price={+bunHandler(constructorIngredients, 'price', '', '0')}
+              thumbnail={bunHandler(constructorIngredients, 'image', '', '')}
+            />
+          </div>
+        ) : (
+          <div className={`${style.bunTop} ml-20 mt-4 mb-4`}>
+            <p className="text text_type_main-large">Добавьте булку</p>
+          </div>
+        )}
 
-            <div className={`${style.info} mt-10 mr-4`}>
-               <div className={`${style.price} mr-10`}>
-                  <p className="text text_type_digits-medium m-2">{sum}</p>
-                  <CurrencyIcon type="primary" />
-               </div>
-               <div onClick={openOrderDetails}>
-                  <Button type="primary" size="medium">
-                     Оформить заказ
-                  </Button>
-               </div>
-            </div>
-         </div>
-         {!modalCreatedOrderActive && orderRequest && !orderFailed &&
-            (<Modal onClick={onClose} title=''>
-               <div className='p-20 m-20'>
-                  <Loader />
-               </div>
-            </Modal >)
-         }
+        {/* Ингредиенты */}
+        <ul className={style.elements}>
+          {constructorIngredients.map(
+            (item, index) =>
+              item.type !== 'bun' && (
+                <AddedIngredient
+                  key={item.uuid}
+                  moveCard={moveCard}
+                  index={index}
+                  ingredient={item}
+                  id={`${item._id}${index}`}
+                />
+              )
+          )}
+        </ul>
 
-         {modalCreatedOrderActive && !orderRequest && !orderFailed && createdOrder &&
-            (<Modal onClick={onClose} title=''>
-               <OrderDetails />
-            </Modal >)
-         }
-      </DndProvider>
-   )
-}
+        {/* Нижняя булка */}
+        {constructorIngredients.length > 0 && bun ? (
+          <div className="ml-20">
+            <ConstructorElement
+              type="bottom"
+              isLocked={true}
+              text={bunHandler(constructorIngredients, 'name', '(низ)', 'Выберите булку')}
+              price={+bunHandler(constructorIngredients, 'price', '', '0')}
+              thumbnail={bunHandler(constructorIngredients, 'image', '', '')}
+            />
+          </div>
+        ) : (
+          <div className={`${style.bunBot} ml-20 mt-4 mb-4`}>
+            <p className="text text_type_main-large">Добавьте булку</p>
+          </div>
+        )}
+
+        {/* Итоговая цена и кнопка */}
+        <div className={`${style.info} mt-10 mr-4`}>
+          <div className={`${style.price} mr-10`}>
+            <p className="text text_type_digits-medium m-2">{sum}</p>
+            <CurrencyIcon type="primary" />
+          </div>
+          <div onClick={openOrderDetails}>
+            <Button type="primary" size="medium">
+              Оформить заказ
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      {/* Модальное окно с загрузкой */}
+      {!modalCreatedOrderActive && orderRequest && !orderFailed && (
+        <Modal onClick={onClose} title="">
+          <div className="p-20 m-20">
+            <Loader />
+          </div>
+        </Modal>
+      )}
+
+      {/* Модальное окно с заказом */}
+      {modalCreatedOrderActive && !orderRequest && !orderFailed && createdOrder && (
+        <Modal onClick={onClose} title="">
+          <OrderDetails />
+        </Modal>
+      )}
+    </DndProvider>
+  );
+};
 
 export default BurgerConstructor;

@@ -1,81 +1,70 @@
 import { DragIcon, ConstructorElement } from '@ya.praktikum/react-developer-burger-ui-components';
-import { useDrag, useDrop } from "react-dnd";
+import { useDrag, useDrop } from 'react-dnd';
 import { FC, useRef } from 'react';
 import { deleteIngredient } from '../../services/reducers/ingredient';
 import { IAddedIngredient, IIndex, IIngredient } from '../../utils/types';
 import { useAppDispatch, useAppSelector } from '../../hook/hook';
 
-
 const AddedIngredient: FC<IAddedIngredient> = ({ ingredient, id, index, moveCard }) => {
-   const { name, price, image, } = ingredient;
-   const { constructorIngredients } = useAppSelector(state => state.ingredientSlice);
-   const dispatch = useAppDispatch();
-   const ref = useRef<HTMLLIElement>(null);
+  const { name, price, image } = ingredient;
+  const { constructorIngredients } = useAppSelector(state => state.ingredientSlice);
+  const dispatch = useAppDispatch();
+  const ref = useRef<HTMLLIElement>(null);
 
-   const onClose = (elem: IIngredient) => {
-      const del = constructorIngredients.indexOf(elem);
-      dispatch(deleteIngredient(del))
-   }
+  const handleClose = (elem: IIngredient) => {
+    const delIndex = constructorIngredients.indexOf(elem);
+    if (delIndex !== -1) {
+      dispatch(deleteIngredient(delIndex));
+    }
+  };
 
-   const [, drop] = useDrop({
-      accept: 'card',
-      hover: (item: IIndex, monitor) => {
-         if (!ref.current) {
-            return;
-         }
+  const [, drop] = useDrop<IIndex>({
+    accept: 'card',
+    hover: (item, monitor) => {
+      if (!ref.current) return;
 
-         const dragIndex = item.index;
-         const hoverIndex = index;
+      const dragIndex = item.index;
+      const hoverIndex = index;
 
-         if (dragIndex === hoverIndex) {
-            return;
-         }
+      if (dragIndex === hoverIndex) return;
 
-         const hoverBoundingRect = ref.current?.getBoundingClientRect();
-         const hoverMiddleY = (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
-         const clientOffset = monitor.getClientOffset();
-         // @ts-ignore
-         const hoverClientY = clientOffset.y - hoverBoundingRect.top;
+      const hoverBoundingRect = ref.current.getBoundingClientRect();
+      const hoverMiddleY = (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
+      const clientOffset = monitor.getClientOffset();
+      if (!clientOffset) return;
 
-         if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) {
-            return;
-         }
+      const hoverClientY = clientOffset.y - hoverBoundingRect.top;
 
-         if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) {
-            return;
-         }
+      if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) return;
+      if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) return;
 
-         moveCard(dragIndex, hoverIndex)
+      moveCard(dragIndex, hoverIndex);
+      item.index = hoverIndex;
+    },
+  });
 
-         item.index = hoverIndex;
-      }
-   })
+  const [{ isDragging }, drag] = useDrag({
+    type: 'card',
+    item: { id, index },
+    collect: (monitor) => ({
+      isDragging: monitor.isDragging(),
+    }),
+  });
 
-   const [{ isDrag }, drag] = useDrag({
-      type: 'card',
-      item: () => {
-         return { id, index }
-      },
-      collect: monitor => ({
-         isDrag: monitor.isDragging()
-      })
-   })
-   drag(drop(ref));
+  drag(drop(ref));
+  const opacity = isDragging ? 0 : 1;
 
-   const opacity = isDrag ? 0 : 1;
-
-   return (
-      <li ref={ref} style={{ opacity }} className='m-4'>
-         <DragIcon type='secondary' />
-         <ConstructorElement
-            text={name}
-            price={price}
-            thumbnail={image}
-            handleClose={() => onClose(ingredient)}
-         />
-      </li>
-   )
-}
-
+  return (
+    <li ref={ref} style={{ opacity }} className='m-4'>
+      <DragIcon type='secondary' />
+      <ConstructorElement
+        text={name}
+        price={price}
+        thumbnail={image}
+        handleClose={() => handleClose(ingredient)}
+      />
+    </li>
+  );
+};
 
 export default AddedIngredient;

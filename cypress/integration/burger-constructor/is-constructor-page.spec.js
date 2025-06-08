@@ -1,48 +1,52 @@
 describe('создание заказа', () => {
-   before(() => {
-      cy.visit('http://localhost:4000');
-   });
+  before(() => {
+    cy.visit('http://localhost:4000');
+  });
 
-   it('должен открыть страницу конструктора по умолчанию', () => {
-      cy.contains('Соберите бургер');
-   })
+  it('должен открыть страницу конструктора по умолчанию', () => {
+    cy.contains('Соберите бургер');
+  });
 
-   it('должен добавить ингредиенты и нажать на оформить заказ', () => {
-      cy.get('[class^=BurgerConstructor_constructor_container_]').as("constructor");
-      
-      cy.get('li').contains('Флюоресцентная булка R2-D3').trigger("dragstart").trigger("dragleave");
-      cy.get("@constructor").trigger("dragenter").trigger("dragover").trigger("drop").trigger("dragend");
-      
-      cy.get('li').contains('Кристаллы марсианских альфа-сахаридов').trigger("dragstart").trigger("dragleave");
-      cy.get("@constructor").trigger("dragenter").trigger("dragover").trigger("drop").trigger("dragend");
+  it('добавляет ингредиенты и оформляет заказ', () => {
+    cy.get('[class^=BurgerConstructor_constructor_container_]').as('constructor');
 
-      cy.get('li').contains('Плоды Фалленианского дерева').trigger("dragstart");
-      cy.get("@constructor").trigger("dragenter").trigger("dragover").trigger("drop").trigger("dragend");
+    const dragAndDrop = (ingredientText) => {
+      cy.contains('li', ingredientText)
+        .trigger('dragstart')
+        .trigger('dragleave');
+      cy.get('@constructor')
+        .trigger('dragenter')
+        .trigger('dragover')
+        .trigger('drop')
+        .trigger('dragend');
+    };
 
-      cy.get('button').contains('Оформить заказ').click();
-   });
+    dragAndDrop('Флюоресцентная булка R2-D3');
+    dragAndDrop('Кристаллы марсианских альфа-сахаридов');
+    dragAndDrop('Плоды Фалленианского дерева');
 
-   it('должен войти в профиль', () => {
-      cy.get('form').within(() => {
-         cy.get('input:first').should('have.attr', 'name', 'e-mail').type('qwe@mail.com');
-         cy.get('input:last').should('have.attr', 'name', 'password').type('1234qwer');
-      })
-      cy.get('button').contains('Войти').click();
-      cy.wait(500)
-      cy.get('button').contains('Оформить заказ').click();
-   });
+    cy.contains('Оформить заказ').click();
+  });
 
-   it('должен загрузить и закрыть модальное окно', () => {
-      cy.wait(15000)
-      cy.contains('Ваш заказ начали готовить');
-      cy.get("#modals button").click();
-   });
+  it('входит в профиль и оформляет заказ', () => {
+    cy.get('form').within(() => {
+      cy.get('input[name="e-mail"]').type('qwe@mail.com');
+      cy.get('input[name="password"]').type('1234qwer');
+    });
+    cy.contains('Войти').click();
+    cy.wait(500);
+    cy.contains('Оформить заказ').click();
+  });
 
-   it('должен открыть страницу ленты заказа и вернуться', () => {
-      cy.contains('Соберите бургер');
-      cy.contains('Лента заказов').click();
-      cy.wait(500);
-      cy.contains('Конструктор').click();
-   })
+  it('загружает и закрывает модальное окно с подтверждением', () => {
+    cy.wait(15000);
+    cy.contains('Ваш заказ начали готовить');
+    cy.get('#modals button').click();
+  });
 
-})
+  it('открывает ленту заказов и возвращается к конструктору', () => {
+    cy.contains('Лента заказов').click();
+    cy.wait(500);
+    cy.contains('Конструктор').click();
+  });
+});

@@ -1,4 +1,4 @@
-import {  NavLink, useLocation } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import { CurrencyIcon } from "@ya.praktikum/react-developer-burger-ui-components";
 import styles from "./feed-card.module.css";
 import dayjs from "dayjs";
@@ -9,13 +9,19 @@ interface IFeedCardProps {
   data: TOrder;
 }
 
+// Обновленная функция форматирования даты
 export const formatDate = (utc: string): string => {
   const date = dayjs(utc);
-  const isToday = dayjs().startOf("day").isSame(date, "day");
-  if (isToday) return "Сегодня, " + date.format("kk:mm");
-  const isYesterday = dayjs().subtract(1, "day").isSame(date, "day");
-  if (isYesterday) return "Вчера, " + date.format("kk:mm");
-  return date.format("DD:MM, kk:mm");
+  const todayStart = dayjs().startOf("day");
+  const yesterdayStart = dayjs().subtract(1, "day").startOf("day");
+
+  if (todayStart.isSame(date, "day")) {
+    return `Сегодня, ${date.format("HH:mm")}`;
+  }
+  if (yesterdayStart.isSame(date, "day")) {
+    return `Вчера, ${date.format("HH:mm")}`;
+  }
+  return date.format("DD.MM, HH:mm");
 };
 
 const FeedCard = ({ data }: IFeedCardProps) => {
@@ -53,7 +59,7 @@ const FeedCard = ({ data }: IFeedCardProps) => {
           )}
           <p className={styles.priceContainer}>
             <span className={`${styles.price} text text_type_digits-default`}>
-              {data.price ? data.price : "–"}
+              {data.price !== undefined ? data.price : "–"}
             </span>
             <CurrencyIcon type="primary" />
           </p>
